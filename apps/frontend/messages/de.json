@@ -18,7 +18,8 @@
     "settings": "Einstellungen",
     "openMenu": "Navigationsmenü öffnen",
     "closeMenu": "Navigationsmenü schließen",
-    "primaryNavigation": "Hauptnavigation"
+    "primaryNavigation": "Hauptnavigation",
+    "pendingApprovalBadgeLabel": "{count, plural, one {# ausstehende Signatur} other {# ausstehende Signaturen}}"
   },
   "common": {
     "cancel": "Abbrechen",

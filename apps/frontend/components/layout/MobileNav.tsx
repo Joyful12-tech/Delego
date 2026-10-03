@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { activeNavHref, navItems } from "./navItems";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { FabButton } from "../ui/FabButton";
+import { PendingApprovalNavBadge } from "../approvals/PendingApprovalNavBadge";
 
 export interface MobileNavProps {
   /** Whether the drawer is currently open */
@@ -129,6 +130,9 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                       {item.icon}
                     </span>
                     {t(item.labelKey)}
+                    {/* Pending multi-sig signatures awaiting a secondary
+                        signature (#780). Renders nothing when the queue is empty. */}
+                    {item.href === "/approvals" && <PendingApprovalNavBadge />}
                   </Link>
                 </li>
               );

@@ -25,6 +25,7 @@ import { DomainWarningBanner } from "../security/DomainWarningBanner";
 import { ConsentBanner } from "../consent/ConsentBanner";
 import { CommandPaletteProvider } from "../command-palette/CommandPaletteProvider";
 import { ChatDrawerProvider } from "../chat/public";
+import { PendingApprovalBadgeProvider } from "../approvals/PendingApprovalBadgeProvider";
 
 // Ephemeral session signing keys live only inside this worker's isolated
 // memory. Loaded client-side only so it never runs during SSR.
@@ -71,15 +72,20 @@ export function AppProviders({ children }: { children: ReactNode }) {
                       <SessionKeyWorkerProvider>
                       <CommandPaletteProvider>
                         <ChatDrawerProvider>
-                          <DomainWarningBanner />
-                          <ConsentBanner />
-                          <DemoBanner />
-                          <SentryBreadcrumbs />
-                          <WebVitalsReporter />
-                          <QueueInspectorModal />
-                          {children}
-                          <NetworkMismatchModal />
-                          <IdleSessionGuard />
+                          {/* Pending multi-sig signature count for the nav
+                              badge (#780) — lives here because both the
+                              desktop sidebar and the mobile drawer read it. */}
+                          <PendingApprovalBadgeProvider>
+                            <DomainWarningBanner />
+                            <ConsentBanner />
+                            <DemoBanner />
+                            <SentryBreadcrumbs />
+                            <WebVitalsReporter />
+                            <QueueInspectorModal />
+                            {children}
+                            <NetworkMismatchModal />
+                            <IdleSessionGuard />
+                          </PendingApprovalBadgeProvider>
                         </ChatDrawerProvider>
                       </CommandPaletteProvider>
                       </SessionKeyWorkerProvider>
