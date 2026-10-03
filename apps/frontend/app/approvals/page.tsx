@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { Amount, Button, Card } from "@delegolabs/ui";
 import type { RejectionReasonCode } from "@delegolabs/types";
 import { useOrders } from "../../hooks/useOrders";
@@ -137,6 +138,14 @@ export default function ApprovalsPage() {
           <CopyViewLinkButton />
         </div>
       </header>
+
+      {/* Multi-sig dual-control queue (#780) — the enterprise-manager view of
+          the same orders, listed by how soon they need a second signature. */}
+      <div className="form-actions">
+        <Link href="/approvals/multi-sig" className="focus-visible-ring">
+          Multi-sig approvals
+        </Link>
+      </div>
 
       {/* Conflict Resolution Cards for HTTP 409 offline replay conflicts (#618) */}
       {conflictMutations.map((mutation) => (

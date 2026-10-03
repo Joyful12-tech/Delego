@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { activeNavHref, navItems } from "./navItems";
 import { useTour } from "../tour/TourProvider";
 import { useDataSaver } from "../../hooks/useDataSaver";
+import { PendingApprovalNavBadge } from "../approvals/PendingApprovalNavBadge";
 
 /**
  * Desktop sidebar navigation.
@@ -45,6 +46,9 @@ export function Sidebar() {
                     {item.icon}
                   </span>
                   {t(item.labelKey)}
+                  {/* Pending multi-sig signatures awaiting a secondary
+                      signature (#780). Renders nothing when the queue is empty. */}
+                  {item.href === "/approvals" && <PendingApprovalNavBadge />}
                 </Link>
               </li>
             );
