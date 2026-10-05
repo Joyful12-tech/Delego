@@ -233,7 +233,7 @@ export default function MerchantRegisterPage() {
           merchantId: walletProof.signerAddress,
         },
         {
-          onProgress: (percent) => setKycProgress(percent),
+          onProgress: (percent: number) => setKycProgress(percent),
           signerAddress: walletProof.signerAddress,
         }
       );
@@ -260,8 +260,8 @@ export default function MerchantRegisterPage() {
     pollKycVerificationStatus(kycUploadId, {
       signerAddress: walletProof.signerAddress,
       signal: controller.signal,
-      onStatus: (status) => setKycStatus(status),
-    }).catch((err) => {
+      onStatus: (status: KycVerificationStatus) => setKycStatus(status),
+    }).catch((err: unknown) => {
       if (controller.signal.aborted) return;
       setKycPollingError(err instanceof Error ? err.message : "Unable to poll verification status.");
     });
@@ -321,7 +321,7 @@ export default function MerchantRegisterPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", maxWidth: 520 }}>
       <h1>Register your store</h1>
 
-      <Stepper steps={STEPP} currentIndex={stepIndex} />
+      <Stepper steps={STEPS} currentIndex={stepIndex} />
 
       {step === "store_info" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>

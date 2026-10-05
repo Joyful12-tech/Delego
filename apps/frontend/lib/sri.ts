@@ -47,7 +47,9 @@ export function isValidSriHash(integrity: string): boolean {
  * Computes the SHA-384 hash in standard Subresource Integrity format
  * (`sha384-<base64>`).
  */
-export async function computeSha384(content: string | Uint8Array): Promise<string> {
+export async function computeSha384(
+  content: string | Uint8Array<ArrayBuffer>,
+): Promise<string> {
   const encoder = new TextEncoder();
   const data = typeof content === "string" ? encoder.encode(content) : content;
 
@@ -73,7 +75,7 @@ export async function computeSha384(content: string | Uint8Array): Promise<strin
  * If tampered or mismatched, returns false (mimicking browser blocking).
  */
 export async function verifySubresourceIntegrity(
-  content: string | Uint8Array,
+  content: string | Uint8Array<ArrayBuffer>,
   expectedIntegrity: string
 ): Promise<boolean> {
   if (!expectedIntegrity || !expectedIntegrity.startsWith("sha384-")) {

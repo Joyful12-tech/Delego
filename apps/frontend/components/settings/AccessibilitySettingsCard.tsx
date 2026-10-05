@@ -2,7 +2,7 @@
 
 import { Card, Button } from "@delegolabs/ui";
 import {
-  useAccessibility,
+  useA11y,
   type ReduceMotionMode,
 } from "../../hooks/useAccessibility";
 import { useTheme, type ThemeMode } from "../../hooks/useTheme";
@@ -21,7 +21,7 @@ export function AccessibilitySettingsCard() {
     setReduceMotion,
     setUnderlineLinks,
     resetToDefaults,
-  } = useAccessibility();
+  } = useA11y();
 
   return (
     <Card

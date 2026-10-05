@@ -10,10 +10,17 @@ import { DisputeResponseDrawer } from "./DisputeResponseDrawer";
 
 // ── Shared mocks ──────────────────────────────────────────────────────────────
 
-const mockSubmitDisputeResponse = vi.fn(async () => {});
+interface DisputeResponsePayload {
+  receiptFiles?: File[];
+  [key: string]: unknown;
+}
+
+const mockSubmitDisputeResponse = vi.fn(
+  async (_payload: DisputeResponsePayload) => {},
+);
 vi.mock("../../lib/disputeResponses", () => ({
-  submitDisputeResponse: (...args: unknown[]) =>
-    mockSubmitDisputeResponse(...args),
+  submitDisputeResponse: (payload: DisputeResponsePayload) =>
+    mockSubmitDisputeResponse(payload),
 }));
 
 const mockGuard = vi.fn((fn: () => unknown) => fn);
@@ -384,9 +391,10 @@ describe("DisputeResponseDrawer", () => {
 
     await waitFor(() => {
       const call = mockSubmitDisputeResponse.mock.calls[0][0];
-      expect(call.receiptFiles).toHaveLength(2);
-      expect(call.receiptFiles[0].name).toBe("r1.jpg");
-      expect(call.receiptFiles[1].name).toBe("r2.pdf");
+      const receiptFiles = call.receiptFiles ?? [];
+      expect(receiptFiles).toHaveLength(2);
+      expect(receiptFiles[0].name).toBe("r1.jpg");
+      expect(receiptFiles[1].name).toBe("r2.pdf");
     });
   });
 

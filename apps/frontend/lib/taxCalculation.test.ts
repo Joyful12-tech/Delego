@@ -4,6 +4,7 @@
  * and edge cases for the automated sales tax and VAT system.
  */
 
+import { describe, expect, test } from "vitest";
 import {
   normalizePostalCode,
   lookupTaxJurisdiction,

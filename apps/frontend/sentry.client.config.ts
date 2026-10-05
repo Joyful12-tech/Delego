@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import type { ErrorEvent } from "@sentry/nextjs";
 import { scrubSentryEvent } from "./lib/observability/scrub-sentry";
 
 /**
@@ -26,7 +27,9 @@ Sentry.init({
     process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE ?? "1.0"
   ),
   beforeSend(event) {
-    return scrubSentryEvent(event);
+    // scrubSentryEvent is pure with respect to its input, so the scrubbed
+    // event is still an ErrorEvent for Sentry's purposes.
+    return scrubSentryEvent(event) as ErrorEvent | null;
   },
 });
 

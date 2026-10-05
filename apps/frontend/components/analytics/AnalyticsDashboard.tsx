@@ -10,6 +10,12 @@ import { adaptOrders, type ListOrdersResponse } from "@delegolabs/api-generated"
 import { SpendingOverview } from "./SpendingOverview";
 import { SpendChart } from "./SpendChart";
 import { RangeSwitcher } from "./RangeSwitcher";
+import { SpendForecastChart } from "./SpendForecastChart";
+import {
+  DEFAULT_FORECAST_HORIZON,
+  buildSpendForecast,
+  type ForecastHorizonDays,
+} from "../../lib/spendForecast";
 import { StaleBadge } from "../offline/StaleBadge";
 import type { SpendingOverview as SpendingOverviewType } from "../../hooks/useAnalytics";
 import { WidgetBoundary } from "../dashboard/WidgetBoundary";
@@ -172,10 +178,54 @@ function UtilizationWidget() {
   );
 }
 
+function ForecastWidget({
+  horizon,
+  locale,
+  onHorizonChange,
+}: {
+  horizon: ForecastHorizonDays;
+  locale: string;
+  onHorizonChange?: (horizon: ForecastHorizonDays) => void;
+}) {
+  const orders = use(loadOrders());
+  const delegations = use(loadDelegations());
+  const points = useMemo(() => {
+    const budgetLimitStroops = delegations.reduce(
+      (sum, d) => sum + asBigInt(d.policy.maxTotal),
+      0n
+    );
+    return buildSpendForecast({
+      dailyTotals: spendByRange(orders, "30d", { locale }).map((bucket) => ({
+        dayStart: bucket.bucketStart,
+        totalStroops: bucket.totalStroops,
+      })),
+      budgetLimitStroops,
+      horizonDays: horizon,
+    });
+  }, [orders, delegations, horizon, locale]);
+
+  return (
+    <Card
+      title="Spend Forecast"
+      ariaLabel="Projected spend for this month"
+      style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+    >
+      <SpendForecastChart
+        points={points}
+        locale={locale}
+        horizon={horizon}
+        onHorizonChange={onHorizonChange}
+      />
+    </Card>
+  );
+}
+
 export interface AnalyticsDashboardProps {
   range: AnalyticsRange;
   locale: string;
   onRangeChange: (range: AnalyticsRange) => void;
+  forecastHorizon?: ForecastHorizonDays;
+  onForecastHorizonChange?: (horizon: ForecastHorizonDays) => void;
   stale?: boolean;
   cachedAt?: number | null;
   ttlMs?: number;
@@ -189,6 +239,8 @@ export function AnalyticsDashboard({
   range,
   locale,
   onRangeChange,
+  forecastHorizon = DEFAULT_FORECAST_HORIZON,
+  onForecastHorizonChange,
   stale = false,
   cachedAt = null,
   ttlMs,
@@ -204,6 +256,13 @@ export function AnalyticsDashboard({
       </WidgetBoundary>
       <WidgetBoundary name="Delegation comparison" minHeight={TABLE_MIN_HEIGHT}>
         <ComparisonWidget />
+      </WidgetBoundary>
+      <WidgetBoundary name="Spend forecast" minHeight={CHART_MIN_HEIGHT}>
+        <ForecastWidget
+          horizon={forecastHorizon}
+          locale={locale}
+          onHorizonChange={onForecastHorizonChange}
+        />
       </WidgetBoundary>
       <WidgetBoundary name="Spending utilization" minHeight={TABLE_MIN_HEIGHT}>
         <UtilizationWidget />

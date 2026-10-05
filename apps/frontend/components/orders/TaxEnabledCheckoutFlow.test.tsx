@@ -3,19 +3,20 @@
  * Tests the complete tax calculation integration across the checkout process.
  */
 
+import { describe, expect, test, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import type { Order } from "@delegolabs/types";
 import { TaxEnabledCheckoutFlow, TaxAwareApprovalCard } from "./TaxEnabledCheckoutFlow";
 
 // Mock dependencies
-jest.mock("../../hooks/useCurrency", () => ({
+vi.mock("../../hooks/useCurrency", () => ({
   useCurrency: () => ({
     currencyId: "xlm",
     rate: { xlmUsdRate: 1.0 },
   }),
 }));
 
-jest.mock("@delegolabs/ui", () => ({
+vi.mock("@delegolabs/ui", () => ({
   Amount: ({ stroops }: { stroops: bigint }) => <span data-testid="amount">{stroops.toString()}</span>,
   Badge: ({ children, tone }: { children: React.ReactNode; tone: string }) => (
     <span data-testid="badge" data-tone={tone}>{children}</span>
@@ -39,7 +40,7 @@ jest.mock("@delegolabs/ui", () => ({
 }));
 
 // Mock other components
-jest.mock("./ApprovalCard", () => ({
+vi.mock("./ApprovalCard", () => ({
   ApprovalCard: ({ deliveryPostalCode, onApprove, onReject }: any) => (
     <div data-testid="approval-card" data-postal-code={deliveryPostalCode}>
       <button onClick={() => onApprove("test-order")} data-testid="approve-btn">
@@ -52,7 +53,7 @@ jest.mock("./ApprovalCard", () => ({
   ),
 }));
 
-jest.mock("./ReceiptPanel", () => ({
+vi.mock("./ReceiptPanel", () => ({
   ReceiptPanel: ({ deliveryPostalCode }: any) => (
     <div data-testid="receipt-panel" data-postal-code={deliveryPostalCode}>
       Receipt with tax
@@ -127,7 +128,7 @@ describe("TaxEnabledCheckoutFlow", () => {
   });
 
   test("handles approval with tax calculation", async () => {
-    const onApprove = jest.fn();
+    const onApprove = vi.fn();
     
     render(
       <TaxEnabledCheckoutFlow
@@ -147,7 +148,7 @@ describe("TaxEnabledCheckoutFlow", () => {
   });
 
   test("handles rejection", async () => {
-    const onReject = jest.fn();
+    const onReject = vi.fn();
     
     render(
       <TaxEnabledCheckoutFlow
@@ -200,7 +201,7 @@ describe("useTaxEnabledOrder hook", () => {
   
   test("calculates correct subtotal from line items", () => {
     // Subtotal should be: (30 * 2) + (40 * 1) = 100 XLM = 1000000000 stroops
-    const subtotal = mockOrder.lineItems.reduce((sum, item) => {
+    const subtotal = (mockOrder.lineItems ?? []).reduce((sum, item) => {
       return sum + (BigInt(item.unitPriceStroops) * BigInt(item.quantity));
     }, 0n);
     
@@ -214,8 +215,8 @@ describe("TaxAwareApprovalCard", () => {
       order: mockOrder,
       postalCode: "90210",
       pending: false,
-      onApprove: jest.fn(),
-      onReject: jest.fn(),
+      onApprove: vi.fn(),
+      onReject: vi.fn(),
     };
 
     render(<TaxAwareApprovalCard {...mockProps} />);
@@ -228,8 +229,8 @@ describe("TaxAwareApprovalCard", () => {
     const mockProps = {
       order: mockOrder,
       pending: false,
-      onApprove: jest.fn(),
-      onReject: jest.fn(),
+      onApprove: vi.fn(),
+      onReject: vi.fn(),
     };
 
     render(<TaxAwareApprovalCard {...mockProps} />);
@@ -241,8 +242,8 @@ describe("TaxAwareApprovalCard", () => {
 
 describe("Integration scenarios", () => {
   test("complete checkout flow with California tax", async () => {
-    const onApprove = jest.fn();
-    const onReject = jest.fn();
+    const onApprove = vi.fn();
+    const onReject = vi.fn();
 
     render(
       <TaxEnabledCheckoutFlow

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { activeNavHref, navItems } from "./navItems";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
-import { FabButton } from "../ui/FabButton";
+import { FabButton } from "../agent/FabButton";
 import { PendingApprovalNavBadge } from "../approvals/PendingApprovalNavBadge";
 
 export interface MobileNavProps {

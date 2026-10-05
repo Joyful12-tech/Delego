@@ -4,8 +4,5 @@
  */
 export { ProductFormModal } from "./ProductFormModal";
 export type { ProductFormModalProps } from "./ProductFormModal";
-export { KycUploader } from "./KycUploader";
-export type { KycUploaderProps } from "./KycUploader";
-export type { KycUploadData, KycVerificationStatus } from "./kycTypes";
-export { encryptKycDocument } from "./kycEncryption";
-export { uploadKycDocument } from "./kycUploadClient";
+export { KycDocumentUploader } from "./KycDocumentUploader";
+export type { KycUploaderProps } from "./KycDocumentUploader";

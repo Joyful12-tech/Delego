@@ -54,6 +54,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
 
+      # @delegolabs/ui is a workspace package consumed from its built dist/.
+      # Building only the web app leaves it unresolved at bundle time, so the
+      # shared packages have to be compiled first (same as ci.yml).
+      - name: Build shared packages
+        run: pnpm --filter "./packages/*" --filter "./apps/frontend" build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
+
       - name: Build frontend
         run: pnpm --filter @delegolabs/web build
         env:

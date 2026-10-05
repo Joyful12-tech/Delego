@@ -44,7 +44,9 @@ export function TaxEnabledCheckoutFlow({
 
   // Calculate subtotal from line items
   const subtotal = (order.lineItems ?? []).reduce((sum, item) => {
-    return sum + (item.unitPriceStroops * BigInt(item.quantity));
+    // unitPriceStroops arrives from the API as an untyped value, so both
+    // operands are coerced before multiplying — bigint * number throws.
+    return sum + BigInt(item.unitPriceStroops) * BigInt(item.quantity);
   }, 0n);
 
   // Calculate tax breakdown if postal code is provided
@@ -81,15 +83,16 @@ export function TaxEnabledCheckoutFlow({
       <div className="tax-preview-mode">
         <Card title="Tax Calculation Preview">
           <div style={{ marginBottom: "1rem" }}>
-            <FormField label="Delivery Postal Code">
-              <input
-                type="text"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                placeholder="Enter postal code for tax calculation"
-                style={{ padding: "0.5rem", width: "250px" }}
-              />
-            </FormField>
+            <FormField
+              label="Delivery Postal Code"
+              inputProps={{
+                type: "text",
+                value: postalCode,
+                onChange: (e) => setPostalCode(e.target.value),
+                placeholder: "Enter postal code for tax calculation",
+                style: { padding: "0.5rem", width: "250px" },
+              }}
+            />
           </div>
           
           <TaxBreakdownDisplay
@@ -105,9 +108,10 @@ export function TaxEnabledCheckoutFlow({
   if (showReceipt || mode === "receipt") {
     return (
       <div className="checkout-receipt">
-        <ReceiptPanel 
-          order={order} 
-          deliveryPostalCode={postalCode || undefined}
+        <ReceiptPanel
+          order={order}
+          // The delivery postal code is what resolves the tax jurisdiction.
+          jurisdictionCode={postalCode || undefined}
         />
         {mode === "full" && (
           <div style={{ marginTop: "1rem", textAlign: "center" }}>
@@ -129,15 +133,17 @@ export function TaxEnabledCheckoutFlow({
         
         {/* Step 1: Postal Code Configuration */}
         <Card title="Delivery Information" className="checkout-step">
-          <FormField label="Delivery Postal Code" required>
-            <input
-              type="text"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="Enter postal code for tax calculation"
-              style={{ padding: "0.75rem", width: "100%", maxWidth: "300px" }}
-            />
-          </FormField>
+          <FormField
+            label="Delivery Postal Code"
+            required
+            inputProps={{
+              type: "text",
+              value: postalCode,
+              onChange: (e) => setPostalCode(e.target.value),
+              placeholder: "Enter postal code for tax calculation",
+              style: { padding: "0.75rem", width: "100%", maxWidth: "300px" },
+            }}
+          />
           {postalCode && (
             <div style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "var(--color-text-muted)" }}>
               Tax will be calculated based on this delivery location
@@ -248,14 +254,15 @@ export function TaxAwareReceiptPanel({
   order,
   postalCode,
   ...props
-}: Omit<React.ComponentProps<typeof ReceiptPanel>, 'deliveryPostalCode'> & {
+}: Omit<React.ComponentProps<typeof ReceiptPanel>, "jurisdictionCode"> & {
   postalCode?: string;
 }) {
   return (
     <ReceiptPanel
       {...props}
       order={order}
-      deliveryPostalCode={postalCode}
+      // The delivery postal code is what resolves the tax jurisdiction.
+      jurisdictionCode={postalCode}
     />
   );
 }
