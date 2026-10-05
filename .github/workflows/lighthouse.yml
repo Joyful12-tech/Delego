@@ -69,9 +69,12 @@ jobs:
           NODE_ENV: production
           NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
 
+      # `start` is `next start -p ${WEB_PORT:-3001}`, so the port is passed through
+      # WEB_PORT. Appending `-p <port>` would reach next as a stray directory
+      # argument ("Invalid project directory provided").
       - name: Start production server
         run: |
-          pnpm --filter @delegolabs/web start -- -p ${{ env.PORT }} &
+          WEB_PORT=${{ env.PORT }} pnpm --filter @delegolabs/web start &
           npx wait-on http://localhost:${{ env.PORT }} --timeout 120000
 
       - name: Run Lighthouse CI
