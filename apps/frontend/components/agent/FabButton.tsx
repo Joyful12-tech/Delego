@@ -11,9 +11,15 @@ import { useEffect, useState } from "react";
 export interface FabButtonProps {
   unreadProposalsCount: number;
   onClick(): void;
+  /** Extra class names so the mobile drawer can control visibility. */
+  className?: string;
 }
 
-export function FabButton({ unreadProposalsCount, onClick }: FabButtonProps) {
+export function FabButton({
+  unreadProposalsCount,
+  onClick,
+  className,
+}: FabButtonProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
 
@@ -56,11 +62,11 @@ export function FabButton({ unreadProposalsCount, onClick }: FabButtonProps) {
   return (
     <button
       type="button"
-      className={`fab-button${hasScrolled ? " fab-button--visible" : ""}`}
+      className={`fab-button${hasScrolled ? " fab-button--visible" : ""}${className ? ` ${className}` : ""}`}
       onClick={onClick}
       aria-label={
         showBadge
-          ? `Open AI assistant,${unreadProposalsCount} unread proposal${unreadProposalsCount === 1 ? "" : "s\"}`
+          ? `Open AI assistant,${unreadProposalsCount} unread proposal${unreadProposalsCount === 1 ? "" : "s"}`
           : "Open AI assistant"
       }
       data-testid="agent-fab-button"
@@ -68,7 +74,7 @@ export function FabButton({ unreadProposalsCount, onClick }: FabButtonProps) {
       <span aria-hidden="true" className="fab-button__icon">
         🤖
       </span>
-      {showBadge ? ({
+      {showBadge ? (
         <span
           className="fab-button__badge"
           data-testid="agent-fab-badge"

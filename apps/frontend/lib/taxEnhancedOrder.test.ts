@@ -3,6 +3,7 @@
  * Tests order enhancement, postal code extraction, and type guards.
  */
 
+import { describe, expect, test } from "vitest";
 import type { Order } from "@delegolabs/types";
 import {
   enhanceOrderWithTax,
@@ -226,13 +227,15 @@ describe("taxEnhancedOrder", () => {
         ...mockBaseOrder,
         customField: "custom-value",
         internalNote: "internal-note",
-      } as any;
+      } as Order & { customField: string; internalNote: string };
 
-      const enhanced = enhanceOrderWithTax(orderWithExtras, "90210");
-      
-      expect(enhanced.customField).toBe("custom-value");
-      expect(enhanced.internalNote).toBe("internal-note");
-      expect(enhanced.deliveryPostalCode).toBe("90210");
+      const enhanced = enhanceOrderWithTax(orderWithExtras, "90210") as
+        | (TaxEnhancedOrder & { customField: string; internalNote: string })
+        | null;
+
+      expect(enhanced?.customField).toBe("custom-value");
+      expect(enhanced?.internalNote).toBe("internal-note");
+      expect(enhanced?.deliveryPostalCode).toBe("90210");
     });
 
     test("extraction preserves extra properties", () => {

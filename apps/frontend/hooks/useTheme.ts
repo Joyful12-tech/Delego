@@ -3,9 +3,10 @@
 /**
  * useTheme — manages light/dark/system/scheduled theme modes.
  *
- * Four modes:
+ * Five modes:
  *   "light"     — always light
  *   "dark"      — always dark
+ *   "high-contrast" — always the high-contrast palette
  *   "system"    — follows prefers-color-scheme
  *   "scheduled" — dark between scheduleStart (hh:mm) and scheduleEnd (hh:mm)
  *                 (defaults 19:00–07:00). Evaluated on a 30-second interval
@@ -22,8 +23,13 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export type ThemeMode = "light" | "dark" | "system" | "scheduled";
-type ResolvedTheme = "light" | "dark";
+export type ThemeMode =
+  | "light"
+  | "dark"
+  | "high-contrast"
+  | "system"
+  | "scheduled";
+export type ResolvedTheme = "light" | "dark" | "high-contrast";
 
 export interface ScheduleConfig {
   /** HH:MM (24-hour) when dark mode starts. Default: "19:00" */
@@ -69,6 +75,8 @@ function resolveTheme(
       return "light";
     case "dark":
       return "dark";
+    case "high-contrast":
+      return "high-contrast";
     case "system":
       return typeof window !== "undefined" &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -85,6 +93,7 @@ function readStoredMode(): ThemeMode {
     if (
       raw === "light" ||
       raw === "dark" ||
+      raw === "high-contrast" ||
       raw === "system" ||
       raw === "scheduled"
     ) {
@@ -138,12 +147,18 @@ function prefersReducedMotion(): boolean {
 }
 
 export interface UseThemeReturn {
-  /** Currently active resolved theme (light | dark). */
+  /** Currently active resolved theme. */
   resolved: ResolvedTheme;
+  /** Alias of {@link resolved}, matching the ThemeProvider vocabulary. */
+  resolvedTheme: ResolvedTheme;
   /** The user's selected mode. */
   mode: ThemeMode;
+  /** Alias of {@link mode}, matching the ThemeProvider vocabulary. */
+  theme: ThemeMode;
   /** Update the theme mode. */
   setMode: (mode: ThemeMode) => void;
+  /** Alias of {@link setMode}, matching the ThemeProvider vocabulary. */
+  setTheme: (mode: ThemeMode) => void;
   /** Current schedule config (only relevant when mode === "scheduled"). */
   schedule: ScheduleConfig;
   /** Update the schedule. Times must be "HH:MM" 24-hour format. */
@@ -256,7 +271,16 @@ export function useTheme(): UseThemeReturn {
     [mode, evaluate]
   );
 
-  return { resolved, mode, setMode, schedule, setSchedule };
+  return {
+    resolved,
+    resolvedTheme: resolved,
+    mode,
+    theme: mode,
+    setMode,
+    setTheme: setMode,
+    schedule,
+    setSchedule,
+  };
 }
 
 /**
@@ -278,6 +302,8 @@ export const themeBootstrapScript = /* js */ `
       resolved = 'dark';
     } else if (mode === 'light') {
       resolved = 'light';
+    } else if (mode === 'high-contrast') {
+      resolved = 'high-contrast';
     } else if (mode === 'system') {
       resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     } else if (mode === 'scheduled') {

@@ -46,6 +46,21 @@ export function SessionKeyGrantModal({ open, onClose, allowedContractCalls }: Se
   const workerRef = useRef<Worker | null>(null);
   const keyIdRef = useRef<string | null>(null);
 
+  // Tear the in-memory signing worker down when the modal unmounts so the
+  // session key never outlives the dialog that granted it.
+  useEffect(() => {
+    return () => {
+      const worker = workerRef.current;
+      if (worker) {
+        const message: SessionKeyWorkerMessage = { type: "CLEAR_KEY" };
+        worker.postMessage(message);
+        worker.terminate();
+        workerRef.current = null;
+      }
+      keyIdRef.current = null;
+    };
+  }, []);
+
   if (!open) return null;
 
   async function handleGrant() {
@@ -53,19 +68,6 @@ export function SessionKeyGrantModal({ open, onClose, allowedContractCalls }: Se
       setErrorMessage("Connect a wallet first.");
       return;
     }
-
-    useEffect(() => {
-      return () => {
-        const worker = workerRef.current;
-        if (worker) {
-          const message: SessionKeyWorkerMessage = { type: "CLEAR_KEY" };
-          worker.postMessage(message);
-          worker.terminate();
-          workerRef.current = null;
-        }
-        keyIdRef.current = null;
-      };
-    }, []);
 
     if (maxAllowanceStroops <= 0n) {
       setErrorMessage("Enter a spending budget greater than zero.");

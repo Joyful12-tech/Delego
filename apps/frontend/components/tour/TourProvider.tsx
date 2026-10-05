@@ -416,7 +416,7 @@ function TourOverlay({
               margin: "0 0 0.375rem",
               fontSize: "0.6875rem",
               fontWeight: 600,
-              color: "var(--color-text-tertiary, #9ca3af)",
+              color: "var(--color-text-secondary, #4b5563)",
               textTransform: "uppercase",
               letterSpacing: "0.05em",
             }}
@@ -460,7 +460,7 @@ function TourOverlay({
                 border: "none",
                 padding: "0.375rem 0",
                 fontSize: "0.8125rem",
-                color: "var(--color-text-tertiary, #9ca3af)",
+                color: "var(--color-text-secondary, #4b5563)",
                 cursor: "pointer",
                 textDecoration: "underline",
               }}

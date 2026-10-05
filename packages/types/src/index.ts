@@ -109,6 +109,23 @@ export interface DualControlState {
 }
 
 /**
+ * One row of the multi-sig dual-control approval dashboard (#780): a
+ * transaction that still needs a secondary signature before it can execute.
+ * Derived from an `Order` (see lib/multiSigApprovals.ts) rather than sent by
+ * the API, so the dashboard has a single flattened shape to render.
+ */
+export interface PendingApprovalItem {
+  orderId: string;
+  /** Who asked for the approval — the requesting agent or delegation. */
+  requestedBy: string;
+  amountStroops: bigint;
+  /** Where the funds go — the merchant or counterparty. */
+  recipient: string;
+  /** After this instant the request can no longer be signed. */
+  expiresAt: Date;
+}
+
+/**
  * Structured reason recorded when a pending order is rejected (#567), so
  * agents can learn *why* an item was unsuitable instead of an unsuitable
  * item being re-proposed indefinitely.

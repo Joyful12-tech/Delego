@@ -10,7 +10,7 @@ import {
   type EntityTypeFilters,
   type SearchEntityType,
 } from "./FilterPanel";
-import { useTheme } from "../../hooks/useTheme";
+import { useTheme, type ThemeMode } from "../../hooks/useTheme";
 
 const DEBOUNCE_MS = 300;
 
@@ -35,11 +35,12 @@ function matchesQuery(
 }
 
 const THEME_CYCLE = ["light", "dark", "high-contrast", "system"] as const;
-const THEME_LABELS: Record<(typeof THEME_CYCLE)[number], string> = {
+const THEME_LABELS: Record<ThemeMode, string> = {
   light: "Light",
   dark: "Dark",
   "high-contrast": "High Contrast",
   system: "System",
+  scheduled: "Scheduled",
 };
 
 /**
@@ -87,8 +88,8 @@ export function GlobalSearch() {
   };
 
   const cycleTheme = () => {
-    const currentIndex = THEME_CYCLE.indexOf(theme);
-    const nextTheme = THEME_CYCLE[(currentIndex + 1) % THEME_CYCLE.length];
+   const currentIndex = THEME_CYCLE.indexOf(theme as (typeof THEME_CYCLE)[number]);
+   const nextTheme = THEME_CYCLE[(currentIndex + 1) % THEME_CYCLE.length];
     setTheme(nextTheme);
   };
 
@@ -170,7 +171,6 @@ export function GlobalSearch() {
         <input
           type="search"
           role="searchbox"
-          className="global-search-input"
           placeholder="Search delegations, orders, transactions..."
           aria-label="Search delegations, orders, and transactions"
           value={query}

@@ -159,6 +159,31 @@ if (
 }
 
 /**
+ * jsdom implements no `matchMedia`, so any component that consults a media
+ * query (`prefers-color-scheme`, `prefers-reduced-motion`, the mobile-width
+ * breakpoint) throws "window.matchMedia is not a function" on first render.
+ * Default every query to `matches: false`; tests that need a specific answer
+ * override it (see `mockMatchMedia` in tests/fakeAudioContext.ts).
+ */
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: (query: string): MediaQueryList =>
+      ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  });
+}
+
+/**
  * Global MSW server lifecycle for every vitest run (FE-045). Individual test
  * files layer scenario handlers on top with `server.use(...)` and MSW resets
  * to these defaults in `afterEach` via `resetHandlers`.

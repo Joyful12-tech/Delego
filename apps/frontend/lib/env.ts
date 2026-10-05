@@ -19,4 +19,26 @@ const envSchema = z
   })
   .passthrough();
 
-export const env = envSchema.parse(process.env);
+// Next.js inlines NEXT_PUBLIC_* values only where they are written as static
+// `process.env.NEXT_PUBLIC_FOO` member expressions. Handing the whole
+// `process.env` object to the schema reaches the browser as an empty object,
+// so `envSchema.parse(process.env)` threw a ZodError on every client render
+// and bounced the page into the global error boundary. Build the object from
+// static reads so the values survive bundling.
+const publicEnv = {
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_FEATURE_CLIENT_SIDE_SIGNING:
+    process.env.NEXT_PUBLIC_FEATURE_CLIENT_SIDE_SIGNING,
+  NEXT_PUBLIC_FEATURE_DUAL_CONTROL_APPROVALS:
+    process.env.NEXT_PUBLIC_FEATURE_DUAL_CONTROL_APPROVALS,
+  NEXT_PUBLIC_IDLE_SESSION_ENABLED:
+    process.env.NEXT_PUBLIC_IDLE_SESSION_ENABLED,
+  NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES:
+    process.env.NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES,
+  NEXT_PUBLIC_IDLE_WARNING_SECONDS:
+    process.env.NEXT_PUBLIC_IDLE_WARNING_SECONDS,
+  NEXT_PUBLIC_CANONICAL_HOSTS: process.env.NEXT_PUBLIC_CANONICAL_HOSTS,
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+};
+
+export const env = envSchema.parse(publicEnv);

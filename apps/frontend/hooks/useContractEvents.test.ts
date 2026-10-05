@@ -64,7 +64,10 @@ function createMockSocket(url: string): MockSocket {
 
 beforeEach(() => {
   sockets = [];
-  const MockWebSocket = vi.fn().mockImplementation((url: string) => createMockSocket(url));
+  const MockWebSocket = Object.assign(
+    vi.fn().mockImplementation((url: string) => createMockSocket(url)),
+    {} as Record<string, number>,
+  );
   // Attach static constants so code under test (and assertions) can use them.
   MockWebSocket.CONNECTING = WS_CONNECTING;
   MockWebSocket.OPEN = 1;

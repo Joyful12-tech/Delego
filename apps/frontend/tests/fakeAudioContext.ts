@@ -127,6 +127,8 @@ export function installFakeAudioContext(
 ): {
   context: FakeAudioContext;
   uninstall: () => void;
+  /** The stub constructor itself, for tests that need to alias it. */
+  FakeCtor: () => FakeAudioContext;
 } {
   const context = createFakeAudioContext(options);
 
@@ -145,6 +147,7 @@ export function installFakeAudioContext(
 
   return {
     context,
+    FakeCtor,
     uninstall: () => {
       if (hadAudioContext) scope.AudioContext = previousAudioContext;
       else delete scope.AudioContext;

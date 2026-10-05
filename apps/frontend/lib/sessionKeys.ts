@@ -16,6 +16,26 @@ export const SESSION_DURATION_OPTIONS: { label: string; hours: number }[] = [
   { label: "7 days", hours: 24 * 7 },
 ];
 
+/**
+ * Messages understood by the dedicated signing worker. Mirrors the protocol
+ * implemented in `workers/sessionKeyWorker.ts` — kept as a type-only contract
+ * so importing it never drags the worker (or its top-level `self` listeners)
+ * into a non-worker bundle.
+ */
+export interface SessionKeyWorkerMessage {
+  type: "INIT_KEY" | "SIGN_PAYLOAD" | "CLEAR_KEY";
+  payload?: Uint8Array;
+  keyId?: string;
+}
+
+/**
+ * Spawns the dedicated worker that holds the ephemeral signing key in its own
+ * isolated memory. The raw key bytes never touch the main thread or storage.
+ */
+export function initSessionKeyWorker(): Worker {
+  return new Worker(new URL("../workers/sessionKeyWorker.ts", import.meta.url));
+}
+
 const STORAGE_KEY = "delego_session_key_grant";
 /** Data entry name prefix used to anchor the grant on-chain via manageData. */
 const MANAGE_DATA_NAME_PREFIX = "delego_session_key";

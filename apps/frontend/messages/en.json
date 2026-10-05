@@ -18,7 +18,8 @@
     "settings": "Settings",
     "openMenu": "Open navigation menu",
     "closeMenu": "Close navigation menu",
-    "primaryNavigation": "Primary navigation"
+    "primaryNavigation": "Primary navigation",
+    "pendingApprovalBadgeLabel": "{count, plural, one {# pending signature} other {# pending signatures}}"
   },
   "common": {
     "cancel": "Cancel",

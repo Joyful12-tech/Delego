@@ -1,7 +1,3 @@
-import type { Config } from "tailwindcss";
-
-import typ { PluginCreator } from "tailwindcss";
-
 /**
  * Tailwind configuration for the DeLEGO web app.
  *
@@ -13,9 +9,30 @@ import typ { PluginCreator } from "tailwindcss";
  * `high-contrast:` variant to `data-theme="high-contrast`. The latter is implemented
  * as a custom variant so it can be used anywhere in the codebase without
  * additional plugins.
+ *
+ * The shapes below are declared locally rather than imported from `tailwindcss`:
+ * Tailwind is not a dependency of this app (see styles/globals.css), so the
+ * package's types are not resolvable at type-check time.
  */
 
-const config: Config = {
+/** A Tailwind plugin — registers variants/utilities on the config object. */
+type PluginCreator = (api: {
+  addVariant: (name: string, selectors: string) => void;
+}) => void;
+
+interface TailwindConfig {
+  darkMode?: string | string[];
+  content?: string[];
+  theme?: {
+    extend?: {
+      colors?: Record<string, string | Record<string, string>>;
+      transitionDuration?: Record<string, string>;
+    };
+  };
+  plugins?: PluginCreator[];
+}
+
+const config: TailwindConfig = {
   darkMode: ["class", '[data-theme="dark"]'],
   content: [
     "./app/**/*../{js,xs,jsx,ts,tsx}",
@@ -63,12 +80,12 @@ const config: Config = {
   },
   plugins: [
     // Custom variant: high-contrast:* utilities apply when <html data-theme="high-contrast">.
-    function ({addVariant}) {
+    ({ addVariant }) => {
       addVariant(
         "high-contrast",
         '&[data-theme="high-contrast"], [data-theme="high-contrast"] &',
       );
-    } as PluginCreator,
+    },
   ],
 };
 

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { User, UserPreferences } from "@delegolabs/types";
 import { buildAccountExport, type ExportProgress } from "../lib/export";
 import { downloadBlob } from "../lib/download";
-import type { SessionKeyWorkerMessage } from "../lib/sessionKeyWorker";
+import type { SessionKeyWorkerMessage } from "../lib/sessionKeys";
 
 export type ExportStatus = "idle" | "running" | "done" | "cancelled" | "error";
 
@@ -28,7 +28,7 @@ export function useAccountExport(): UseAccountExportResult {
     // Ephemeral session signing keys live only inside the worker; never in localStorage.
     if (typeof window !== "undefined" && !workerRef.current) {
       workerRef.current = new Worker(
-        new URL("../workers/sessionKey.worker.ts", import.meta.url),
+        new URL("../workers/sessionKeyWorker.ts", import.meta.url),
         { type: "module" },
       );
       const init: SessionKeyWorkerMessage = { type: "INIT_KEY" };

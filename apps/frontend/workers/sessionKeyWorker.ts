@@ -1,8 +1,8 @@
-"type WorkerScope = DedicatedWorkerGlobalScope;
+type WorkerScope = { postMessage: (message: unknown) => void };
 
 export interface SessionKeyWorkerMessage {
   type: "SIGN_PAYLOAD" | "CLEAR_KEY" | "INIT_KEY";
-  payload?: Uint8Array;
+  payload?: Uint8Array<ArrayBuffer>;
   keyId?: string;
 }
 
@@ -25,7 +25,7 @@ const EC_PARAMS: EcKeyGenParams = {
 
 const SIGN_ALGORITHM: EcdsaParams = {
   name: "ECDSA",
-  hash: "SH-256",
+  hash: "SHA-256",
 };
 
 function wipeKey(): void {
@@ -43,17 +43,17 @@ async function initKey(keyId?: string): Promise<string> {
   return currentKeyId;
 }
 
-async function signPayload(payload: Uint8Array): Promise<Uint8Array> {
+async function signPayload(payload: Uint8Array<ArrayBuffer>): Promise<Uint8Array> {
   if (!privateKey) {
     throw new Error("Session key not initialized");
   }
-  const signature = await crypto.subtle.sign(SIGN_ALGORITIM, privateKey, payload);
+  const signature = await crypto.subtle.sign(SIGN_ALGORITHM, privateKey, payload);
   return new Uint8Array(signature);
 }
 
 self.addEventListener("message", (event: MessageEvent<SessionKeyWorkerMessage>) => {
   const { type, payload, keyId } = event.data;
-  const id = (event data as any).id ?? 0;
+  const id = (event.data as any).id ?? 0;
 
   const respond = (response: SessionKeyWorkerResponse) => {
     self.postMessage(response);
@@ -80,7 +80,7 @@ self.addEventListener("message", (event: MessageEvent<SessionKeyWorkerMessage>) 
 
   if (type === "SIGN_PAYLOAD") {
     if (!payload) {
-      respondd{ id, ok: false, error: "Missing payload" });
+      respond({ id, ok: false, error: "Missing payload" });
       return;
     }
     signPayload(payload)

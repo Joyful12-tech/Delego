@@ -29,37 +29,37 @@ export function TaxBreakdownExample() {
     <div className="tax-breakdown-demo">
       <Card title="Tax Breakdown Integration Demo">
         <div className="demo-controls" style={{ marginBottom: "2rem" }}>
-          <FormField label="Subtotal (XLM)">
-            <input
-              type="number"
-              value={subtotal}
-              onChange={(e) => setSubtotal(e.target.value)}
-              min="0"
-              step="0.01"
-              style={{ width: "150px", padding: "0.5rem" }}
-            />
-          </FormField>
+          <FormField
+            label="Subtotal (XLM)"
+            inputProps={{
+              type: "number",
+              value: subtotal,
+              onChange: (e) => setSubtotal(e.target.value),
+              min: "0",
+              step: "0.01",
+              style: { width: "150px", padding: "0.5rem" },
+            }}
+          />
           
-          <FormField label="Postal Code">
-            <input
-              type="text"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="Enter postal code"
-              style={{ width: "200px", padding: "0.5rem" }}
-            />
-          </FormField>
+          <FormField
+            label="Postal Code"
+            inputProps={{
+              type: "text",
+              value: postalCode,
+              onChange: (e) => setPostalCode(e.target.value),
+              placeholder: "Enter postal code",
+              style: { width: "200px", padding: "0.5rem" },
+            }}
+          />
           
-          <FormField label="Show Details">
-            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <input
-                type="checkbox"
-                checked={showDetails}
-                onChange={(e) => setShowDetails(e.target.checked)}
-              />
-              Detailed breakdown
-            </label>
-          </FormField>
+          <FormField
+            label="Show Details"
+            inputProps={{
+              type: "checkbox",
+              checked: showDetails,
+              onChange: (e) => setShowDetails(e.target.checked),
+            }}
+          />
         </div>
 
         <div className="demo-sections">

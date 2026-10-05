@@ -33,7 +33,7 @@ function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
  * Convert a base64url-encoded VAPID public key to the Uint8Array that
  * `PushManager.subscribe` expects as `applicationServerKey`.
  */
-export function vapidPublicKeyToUint8Array(base64UrlKey: string): Uint8Array {
+export function vapidPublicKeyToUint8Array(base64UrlKey: string): Uint8Array<ArrayBuffer> {
   const padding = (4 - (base64UrlKey.length % 4)) % 4;
   const base64 = base64UrlKey.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat(padding);
   const binary = atob(base64);
