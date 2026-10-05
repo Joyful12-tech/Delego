@@ -49,6 +49,8 @@ export const metadata: Metadata = {
  * `--color-bg-primary` in styles/globals.css.
  */
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
     { media: "(prefers-color-scheme: dark)", color: "#0b0f19" },
