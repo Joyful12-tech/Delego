@@ -28,7 +28,7 @@ export function useAccountExport(): UseAccountExportResult {
     // Ephemeral session signing keys live only inside the worker; never in localStorage.
     if (typeof window !== "undefined" && !workerRef.current) {
       workerRef.current = new Worker(
-        new URL("../workers/sessionKey.worker.ts", import.meta.url),
+        new URL("../workers/sessionKeyWorker.ts", import.meta.url),
         { type: "module" },
       );
       const init: SessionKeyWorkerMessage = { type: "INIT_KEY" };
